@@ -1,67 +1,156 @@
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
+import { useAuth } from '@/context/authContext';
+import Loader from '@/components/Loader';
+
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  signInWithPopup,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
+import { auth } from '@/firebase/firebase';
+const gProvider = new GoogleAuthProvider();
+const fProvider = new FacebookAuthProvider();
+
 import { IoLogoGoogle, IoLogoFacebook } from 'react-icons/io';
+import ToastMessage from '@/components/ToastMessage';
+import { toast } from 'react-toastify';
 import Link from 'next/link';
 
 const Login = () => {
-  return (
+  const router = useRouter();
+  const { currentUser, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (!isLoading && currentUser) {
+      router.push('/');
+    }
+  }, [currentUser, isLoading]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = e.target[0].value;
+    const password = e.target[1].value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const resetPassword = async () => {
+    try {
+      toast.promise(
+        async () => {
+          await sendPasswordResetEmail(auth, email);
+        },
+        {
+          pending: 'Gerando link de redefinição',
+          success:
+            'Redefina o envio de e-mails para seu ID de e-mail registrado.',
+          error: 'Você pode ter digitado o ID de e-mail errado!',
+        },
+        {
+          autoClose: 5000,
+        }
+      );
+      console.log('Email send to your registered email id.');
+    } catch (error) {
+      console.error('An error occured', error);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, gProvider);
+    } catch (error) {
+      console.error('An error occured', error);
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    try {
+      await signInWithPopup(auth, fProvider);
+    } catch (error) {
+      console.error('An error occured', error);
+    }
+  };
+
+  return isLoading || (!isLoading && !!currentUser) ? (
+    <Loader />
+  ) : (
     <div className="h-[100vh] flex justify-center items-center bg-c1">
-      <div className="flex items-center flex-col w-[600px]">
+      <ToastMessage />
+      <div className="flex items-center flex-col">
         <div className="text-center">
-          <div className="text-4xl font-bold">Login com sua conta</div>
+          <div className="text-4xl font-bold">Login </div>
           <div className="mt-3 text-c3">
             Conecte-se e converse com seus amigos
           </div>
         </div>
-
         <div className="flex items-center gap-2 w-full mt-10 mb-5">
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
+          <div
+            className="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-800 w-1/2 h-14 rounded-md cursor-pointer p-[1px]"
+            onClick={signInWithGoogle}
+          >
             <div className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md">
               <IoLogoGoogle size={24} />
               <span>Login com Google</span>
             </div>
           </div>
-
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
+          <div
+            className="bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-800 w-1/2 h-14 rounded-md cursor-pointer p-[1px]"
+            onClick={signInWithFacebook}
+          >
             <div className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md">
               <IoLogoFacebook size={24} />
               <span>Login com Facebook</span>
             </div>
           </div>
         </div>
-
         <div className="flex items-center gap-1">
           <span className="w-5 h-[1px] bg-c3"></span>
-          <span className="text-c3 font-semibold">Ou</span>
+          <span className="text-c3 font-semibold">OU</span>
           <span className="w-5 h-[1px] bg-c3"></span>
         </div>
-
-        <form className="flex flex-col items-center gap-3 w-[500px] mt-5">
+        <form
+          className="flex flex-col items-center gap-3 w-[500px] mt-5"
+          onSubmit={handleSubmit}
+        >
           <input
             type="email"
             placeholder="Email"
             className="w-full h-14 bg-c5 rounded-xl outline-none border-none px-5 text-c3"
-            autoComplete="off"
+            autocomplete="off"
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
-            placeholder="Senha"
+            placeholder="Password"
             className="w-full h-14 bg-c5 rounded-xl outline-none border-none px-5 text-c3"
-            autoComplete="off"
+            autocomplete="off"
           />
           <div className="text-right w-full text-c3">
-            <span className="cursor-pointer">Esqueceu a senha?</span>
+            <span className="cursor-pointer" onClick={resetPassword}>
+              Esqueceu a senha?
+            </span>
           </div>
-          <button className="mt-4 w-full h-14 rounded-xl outline-none text-base font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+          <button className="mt-4 w-full h-14 rounded-xl outline-none text-base font-semibold bg-gradient-to-r  from-indigo-200 via-purple-400 to-pink-800">
             Login
           </button>
         </form>
-
-        <div className="flex jusitify-center gap-1 text-c3 mt-5">
-          <span>Ainda não tem conta?</span>
+        <div className="flex justify-center gap-1 text-c3 mt-5">
+          <span>Não tem conta ainda?</span>
           <Link
             href="/register"
             className="font-semibold text-white underline underline-offset-2 cursor-pointer"
           >
-            Registre-se
+            Criar conta
           </Link>
         </div>
       </div>
