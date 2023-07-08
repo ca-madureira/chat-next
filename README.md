@@ -22,6 +22,7 @@ O projeto tem como objetivo:
   - Firestore
   - Storage
 
-![image](https://github.com/ca-madureira/chat-next/assets/121184472/fa70d82a-9ba6-4dc3-8633-8ce267dcce82)
+
 
 ![image](https://github.com/ca-madureira/chat-next/assets/121184472/409473de-ea71-45f0-8281-418d39343d8d)
+Aula ministrada por: [JS Dev Hindi](https://www.youtube.com/watch?v=vLsv776P3-o)
