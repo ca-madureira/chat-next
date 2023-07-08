@@ -14,6 +14,7 @@ O projeto tem como objetivo:
 ### Frontend
 - Next Js
 - Tailwindcss
+- NextAuth.js 
 - API do Google Sign-In 
 ### Backend
 - Firebase
