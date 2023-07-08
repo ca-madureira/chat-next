@@ -1,4 +1,5 @@
 # Chat 
+##### Aula ministrada por: [JS Dev Hindi](https://www.youtube.com/watch?v=vLsv776P3-o)
 ## Sobre o Projeto
 O projeto tem como objetivo:
 -  Cadastar usuario com Firebase
@@ -25,4 +26,4 @@ O projeto tem como objetivo:
 
 
 ![image](https://github.com/ca-madureira/chat-next/assets/121184472/409473de-ea71-45f0-8281-418d39343d8d)
-Aula ministrada por: [JS Dev Hindi](https://www.youtube.com/watch?v=vLsv776P3-o)
+
